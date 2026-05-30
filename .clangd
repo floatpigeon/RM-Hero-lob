@@ -1,0 +1,9 @@
+If:
+  PathMatch: toy/.*
+CompileFlags:
+  CompilationDatabase: toy/.clangd-build
+---
+If:
+  PathMatch: formal/.*
+CompileFlags:
+  CompilationDatabase: formal/build
