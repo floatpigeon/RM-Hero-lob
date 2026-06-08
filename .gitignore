@@ -1,0 +1,7 @@
+build/
+log/
+install/
+data/
+.cache/
+.codex/
+.agents/
