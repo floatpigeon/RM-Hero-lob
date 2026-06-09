@@ -19,13 +19,18 @@ public:
     double FramesPerSecond() const;
 
 private:
+    FrameData MakeWindowFrameCopy(const FrameData& frame) const;
+    void ResetState();
+    double ResolveTimestampSeconds(double raw_timestamp_seconds) const;
     void TrimRecentFrames(double current_timestamp_seconds);
+    bool IsCaptureReady() const;
 
     PipelineConfig config_;
     cv::VideoCapture capture_;
     std::deque<FrameData> recent_frames_;
     std::int64_t next_frame_index_ = 0;
     double frames_per_second_ = 60.0;
+    bool is_open_ = false;
 };
 
 }  // namespace hero_lob

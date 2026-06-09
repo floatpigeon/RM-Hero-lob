@@ -7,15 +7,15 @@
 namespace hero_lob {
 
 Pipeline::Pipeline(const PipelineConfig& config)
-    : config_(config),
-      capture_(config_),
-      identifier_(config_),
-      tracker_(config_),
-      reference_frame_selector_(config_),
-      image_registrator_(config_),
-      background_remover_(config_),
-      tracker_processor_(config_),
-      image_synthesis_(config_) {}
+    : config_(config)
+    , capture_(config_)
+    , identifier_(config_)
+    , tracker_(config_)
+    , reference_frame_selector_(config_)
+    , image_registrator_(config_)
+    , background_remover_(config_)
+    , tracker_processor_(config_)
+    , image_synthesis_(config_) {}
 
 bool Pipeline::Run(const std::string& input_video, const std::string& output_image) {
     std::cout << "Opening input video: " << input_video << '\n';
@@ -23,6 +23,7 @@ bool Pipeline::Run(const std::string& input_video, const std::string& output_ima
         std::cerr << "Failed to open input video: " << input_video << '\n';
         return false;
     }
+    std::cout << "Capture FPS: " << capture_.FramesPerSecond() << '\n';
 
     tracker_processor_.Reset();
 
@@ -41,16 +42,15 @@ bool Pipeline::Run(const std::string& input_video, const std::string& output_ima
         const ForegroundMaskResult foreground =
             background_remover_.Process(reference, registration);
         const TrajectoryResult trajectory = tracker_processor_.Process(foreground);
-        const SynthesisResult synthesis =
-            image_synthesis_.Process(reference, trajectory);
+        const SynthesisResult synthesis = image_synthesis_.Process(reference, trajectory);
 
         if (synthesis.valid) {
             last_synthesis = synthesis;
         }
 
         if (frame.frame_index % 30 == 0) {
-            std::cout << "Processed frame " << frame.frame_index
-                      << " at " << frame.timestamp_seconds << "s\n";
+            std::cout << "Processed frame " << frame.frame_index << " at "
+                      << frame.timestamp_seconds << "s\n";
         }
     }
 

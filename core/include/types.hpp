@@ -26,12 +26,76 @@ enum class ReferenceMode {
     kFrozen,
 };
 
+struct HsvRangeConfig {
+    int hue_min = 0;
+    int hue_max = 0;
+};
+
+struct ColorThresholdConfig {
+    HsvRangeConfig green = {45, 90};
+    HsvRangeConfig red_low = {0, 12};
+    HsvRangeConfig red_high = {166, 179};
+    HsvRangeConfig blue = {95, 130};
+    int min_saturation = 10;
+    int min_value = 100;
+};
+
+struct MorphologyConfig {
+    int blur_kernel_size = 5;
+    int open_kernel_size = 3;
+    int close_kernel_size = 5;
+};
+
+struct GuideConstraintConfig {
+    float min_area_ratio = 0.00005F;
+    float max_area_ratio = 0.02F;
+    float max_aspect_ratio_deviation = 0.45F;
+    float min_circularity = 0.65F;
+    float min_color_advantage = 20.0F;
+};
+
+struct LightConstraintConfig {
+    float min_length_ratio = 0.02F;
+    float max_length_ratio = 0.30F;
+    float min_width_ratio = 0.003F;
+    float max_width_ratio = 0.08F;
+    float min_aspect_ratio = 2.0F;
+    float max_aspect_ratio = 18.0F;
+    float min_fill_ratio = 0.45F;
+    float min_color_advantage = 20.0F;
+};
+
+struct PairConstraintConfig {
+    float max_angle_difference_degrees = 12.0F;
+    float max_length_delta_ratio = 0.35F;
+    float max_center_y_delta_ratio = 0.45F;
+    float min_center_distance_ratio = 0.40F;
+    float max_center_distance_ratio = 4.50F;
+    float max_overlap_ratio = 0.15F;
+};
+
+struct TripletConstraintConfig {
+    float max_guide_midpoint_x_offset_ratio = 0.90F;
+    float min_guide_midpoint_y_offset_ratio = 0.15F;
+    float max_guide_midpoint_y_offset_ratio = 2.20F;
+    float min_guide_radius_to_light_length_ratio = 0.15F;
+    float max_guide_radius_to_light_length_ratio = 1.10F;
+};
+
+struct IdentifierConfig {
+    ColorThresholdConfig color = {};
+    MorphologyConfig morphology = {};
+    GuideConstraintConfig guide = {};
+    LightConstraintConfig light = {};
+    PairConstraintConfig pair = {};
+    TripletConstraintConfig triplet = {};
+};
+
 struct PipelineConfig {
     double stable_window_seconds = 0.5;
     double lost_timeout_seconds = 0.2;
     double trigger_window_seconds = 3.0;
-    float placeholder_light_length_ratio = 0.16F;
-    float placeholder_light_gap_ratio = 0.10F;
+    IdentifierConfig identifier = {};
 };
 
 struct FrameData {
@@ -40,9 +104,7 @@ struct FrameData {
     cv::Mat bgr;
     cv::Mat hsv;
 
-    bool IsValid() const {
-        return !bgr.empty();
-    }
+    bool IsValid() const { return !bgr.empty(); }
 };
 
 struct AnchorSet {
