@@ -25,6 +25,9 @@ bool Pipeline::Run(const std::string& input_video, const std::string& output_ima
     }
     std::cout << "Capture FPS: " << capture_.FramesPerSecond() << '\n';
 
+    tracker_.Reset();
+    reference_frame_selector_.Reset();
+    background_remover_.Reset();
     tracker_processor_.Reset();
 
     FrameData frame;

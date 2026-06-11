@@ -68,6 +68,7 @@ cmake --build build
 ./build/hero_lob_color_picker
 ./build/hero_lob_brighten
 ./build/hero_lob_identifier_debug
+./build/hero_lob_trajectory_debug
 ./build/identifier_geometry_test
 ./build/identifier_synthetic_test
 ```
@@ -133,6 +134,20 @@ cmake --build build
 - 导出 `raw_brightness_mask`、`brightness_mask`、`guide_candidate_mask`、`light_candidate_mask`、`stable_pair_roi`、`edge_red_mask`、`edge_blue_mask`、`candidate_overlay`、`stable_pair_overlay`、`result_overlay`。
 - 摘要文件会输出是否检测成功、最终颜色类别，以及 guide 和稳定竖向短灯条对的 anchors。
 - `--gui` 模式可在原图、各类 mask 和 overlay 之间切换查看。
+
+### 轨迹调试工具
+
+命令：
+
+```bash
+./build/hero_lob_trajectory_debug /path/to/input.mp4 /tmp/trajectory_debug
+./build/hero_lob_trajectory_debug /path/to/input.mp4 /tmp/trajectory_debug --max-frames 180 --gui
+```
+
+行为：
+- 导出 `first_frame.png`、`candidate_mask_last.png`、`trajectory_exposure.png`、`trajectory_heatmap.png`、`trajectory_overlay.png`。
+- `summary.txt` 输出最终帧的候选前景像素数、轨迹像素数和滑动窗口累计帧数；`summary.csv` 输出逐帧统计。
+- `--gui` 模式可在原图、候选前景 mask、轨迹曝光图、热力图和叠加图之间切换查看。
 
 ## 当前状态
 

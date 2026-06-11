@@ -1,5 +1,8 @@
 #pragma once
 
+#include <deque>
+#include <vector>
+
 #include "types.hpp"
 
 namespace hero_lob {
@@ -12,9 +15,19 @@ public:
     void Reset();
 
 private:
+    struct TemporalMaskEntry {
+        cv::Mat mask;
+    };
+
+    struct TrajectoryWindowEntry {
+        double timestamp_seconds = 0.0;
+        std::vector<cv::Point> points;
+    };
+
     PipelineConfig config_;
-    cv::Mat accumulated_mask_;
-    int accumulated_frames_ = 0;
+    cv::Mat hit_count_map_;
+    std::deque<TemporalMaskEntry> temporal_masks_;
+    std::deque<TrajectoryWindowEntry> trajectory_window_;
 };
 
 }  // namespace hero_lob

@@ -43,4 +43,9 @@ TrackingResult Tracker::Process(const FrameData& frame, const DetectionResult& d
     return result;
 }
 
+void Tracker::Reset() {
+    last_result_ = {};
+    last_seen_timestamp_seconds_ = -1.0;
+}
+
 }  // namespace hero_lob

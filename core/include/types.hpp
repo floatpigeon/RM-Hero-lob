@@ -152,11 +152,31 @@ struct IdentifierConfig {
     TripletConstraintConfig triplet = {};
 };
 
+struct MotionForegroundConfig {
+    int warmup_frames = 5;
+    int min_brightness_value = 180;
+    int min_diff_value = 24;
+    float background_alpha = 0.05F;
+    int open_kernel_size = 3;
+    int close_kernel_size = 5;
+    int static_bright_value_threshold = 220;
+};
+
+struct TrajectoryWindowConfig {
+    double window_seconds = 3.0;
+    int temporal_vote_frames = 3;
+    int temporal_vote_threshold = 2;
+    int min_component_area_pixels = 9;
+    float max_component_area_ratio = 0.05F;
+};
+
 struct PipelineConfig {
     double stable_window_seconds = 0.5;
     double lost_timeout_seconds = 0.2;
     double trigger_window_seconds = 3.0;
     IdentifierConfig identifier = {};
+    MotionForegroundConfig motion_foreground = {};
+    TrajectoryWindowConfig trajectory_window = {};
 };
 
 struct FrameData {
@@ -202,6 +222,8 @@ struct ReferenceFrameResult {
 
 struct RegistrationResult {
     bool valid = false;
+    std::int64_t frame_index = -1;
+    double timestamp_seconds = 0.0;
     cv::Matx23f transform = cv::Matx23f(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F);
     cv::Mat registered_bgr;
     cv::Mat registered_hsv;
@@ -209,6 +231,8 @@ struct RegistrationResult {
 
 struct ForegroundMaskResult {
     bool valid = false;
+    std::int64_t frame_index = -1;
+    double timestamp_seconds = 0.0;
     cv::Rect roi = {};
     cv::Mat static_exclusion_mask;
     cv::Mat candidate_mask;

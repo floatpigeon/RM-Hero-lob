@@ -7,12 +7,13 @@ ReferenceFrameSelector::ReferenceFrameSelector(const PipelineConfig& config) : c
 ReferenceFrameResult ReferenceFrameSelector::Process(
     const FrameData& frame,
     const TrackingResult& tracking) {
-    anchor_window_.emplace_back(frame, tracking);
-    TrimWindow(frame.timestamp_seconds);
-
-    if (!tracking.anchors.valid) {
+    (void)tracking;
+    if (!frame.IsValid()) {
         return current_reference_;
     }
+
+    anchor_window_.emplace_back(frame, tracking);
+    TrimWindow(frame.timestamp_seconds);
 
     if (!current_reference_.has_reference) {
         current_reference_.reference_frame = frame;
@@ -35,6 +36,11 @@ void ReferenceFrameSelector::StartTrigger(double trigger_start_time_seconds) {
     if (current_reference_.has_reference) {
         current_reference_.mode = ReferenceMode::kFrozen;
     }
+}
+
+void ReferenceFrameSelector::Reset() {
+    anchor_window_.clear();
+    current_reference_ = {};
 }
 
 void ReferenceFrameSelector::TrimWindow(double current_timestamp_seconds) {

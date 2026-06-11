@@ -80,6 +80,15 @@ target_link_libraries(hero_lob_identifier_debug
         hero_lob_core
 )
 
+add_executable(hero_lob_trajectory_debug
+    core/tools/trajectory_debug_main.cpp
+)
+
+target_link_libraries(hero_lob_trajectory_debug
+    PRIVATE
+        hero_lob_core
+)
+
 add_executable(identifier_geometry_test
     core/tests/identifier_geometry_test.cpp
 )
@@ -101,3 +110,41 @@ target_link_libraries(identifier_synthetic_test
 )
 
 add_test(NAME identifier_synthetic_test COMMAND identifier_synthetic_test)
+
+add_executable(background_remover_test
+    core/tests/background_remover_test.cpp
+)
+
+target_link_libraries(background_remover_test
+    PRIVATE
+        hero_lob_core
+)
+
+add_test(NAME background_remover_test COMMAND background_remover_test)
+
+add_executable(tracker_processor_test
+    core/tests/tracker_processor_test.cpp
+)
+
+target_link_libraries(tracker_processor_test
+    PRIVATE
+        hero_lob_core
+)
+
+add_test(NAME tracker_processor_test COMMAND tracker_processor_test)
+
+add_executable(pipeline_smoke_test
+    core/tests/pipeline_smoke_test.cpp
+)
+
+target_compile_definitions(pipeline_smoke_test
+    PRIVATE
+        HERO_LOB_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+target_link_libraries(pipeline_smoke_test
+    PRIVATE
+        hero_lob_core
+)
+
+add_test(NAME pipeline_smoke_test COMMAND pipeline_smoke_test)

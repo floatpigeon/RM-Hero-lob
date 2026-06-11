@@ -302,9 +302,9 @@ std::optional<LightBarCandidate> BuildStableLightCandidate(
         return std::nullopt;
     }
 
-    const cv::RotatedRect local_box = cv::minAreaRect(contour);
-    const float rect_length = std::max(local_box.size.width, local_box.size.height);
-    const float rect_width = std::min(local_box.size.width, local_box.size.height);
+    const cv::Rect local_bbox = cv::boundingRect(contour);
+    const float rect_length = static_cast<float>(local_bbox.height);
+    const float rect_width = static_cast<float>(local_bbox.width);
     if (rect_length <= 0.0F || rect_width <= 0.0F) {
         return std::nullopt;
     }
@@ -338,49 +338,31 @@ std::optional<LightBarCandidate> BuildStableLightCandidate(
         full_contour.emplace_back(point.x + roi.x, point.y + roi.y);
     }
 
-    float angle_radians = local_box.angle * kPi / 180.0F;
-    if (local_box.size.width > local_box.size.height) {
-        angle_radians += kPi * 0.5F;
-    }
-    cv::Point2f axis(std::cos(angle_radians), std::sin(angle_radians));
-    axis = NormalizeVector(axis);
-    if (axis.y < 0.0F) {
-        axis *= -1.0F;
-    }
-
-    const cv::Point2f global_center(local_box.center.x + roi.x, local_box.center.y + roi.y);
-    float min_projection = std::numeric_limits<float>::max();
-    float max_projection = std::numeric_limits<float>::lowest();
-    for (const cv::Point& point : full_contour) {
-        const float projection = (cv::Point2f(point) - global_center).dot(axis);
-        min_projection = std::min(min_projection, projection);
-        max_projection = std::max(max_projection, projection);
-    }
-    const auto endpoints = identifier_geometry::SortEndpointsTopBottom(
-        global_center + axis * min_projection,
-        global_center + axis * max_projection);
+    const float center_x = roi.x + static_cast<float>(local_bbox.x) + rect_width * 0.5F;
+    const float center_y = roi.y + static_cast<float>(local_bbox.y) + rect_length * 0.5F;
+    const cv::Point2f global_center(center_x, center_y);
+    const cv::Point2f axis(0.0F, 1.0F);
+    const cv::Point2f top_endpoint(
+        center_x,
+        roi.y + static_cast<float>(local_bbox.y));
+    const cv::Point2f bottom_endpoint(
+        center_x,
+        roi.y + static_cast<float>(local_bbox.y + local_bbox.height - 1));
 
     LightBarCandidate candidate;
     candidate.color = ResolveEdgeColor(full_frame_size, full_contour, red_mask, blue_mask, edge_color);
     candidate.center = global_center;
-    candidate.top = endpoints[0];
-    candidate.bottom = endpoints[1];
+    candidate.top = top_endpoint;
+    candidate.bottom = bottom_endpoint;
     candidate.axis = axis;
-    candidate.box = cv::RotatedRect(global_center, cv::Size2f(rect_length, rect_width), local_box.angle);
+    candidate.box = cv::RotatedRect(global_center, cv::Size2f(rect_width, rect_length), 90.0F);
     candidate.length = rect_length;
     candidate.width = rect_width;
-    candidate.angle_degrees = AngleDegreesOf(candidate.axis);
+    candidate.angle_degrees = 90.0F;
     candidate.fill_ratio = fill_ratio;
     candidate.mask_support = static_cast<float>(area);
     candidate.center = (candidate.top + candidate.bottom) * 0.5F;
     candidate.length = std::max(candidate.length, LengthOf(candidate.bottom - candidate.top));
-
-    const float vertical_alignment_degrees =
-        std::acos(std::clamp(std::fabs(candidate.axis.dot(cv::Point2f(0.0F, 1.0F))), 0.0F, 1.0F)) *
-        180.0F / kPi;
-    if (vertical_alignment_degrees > config.max_abs_angle_from_vertical_degrees) {
-        return std::nullopt;
-    }
 
     const float center_y_offset = candidate.center.y - guide.center.y;
     if (center_y_offset < guide.radius * config.min_center_y_offset_radius_scale ||

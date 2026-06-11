@@ -18,7 +18,7 @@ hero_lob::PipelineConfig MakeSyntheticConfig() {
     config.identifier.morphology.blur_kernel_size = 1;
     config.identifier.morphology.open_kernel_size = 1;
     config.identifier.morphology.close_kernel_size = 1;
-    config.identifier.stable_pair_roi.half_width_radius_scale = 8.0F;
+    config.identifier.stable_pair_roi.half_width_radius_scale = 3.0F;
     config.identifier.stable_pair_roi.top_offset_radius_scale = 1.0F;
     config.identifier.stable_pair_roi.bottom_offset_radius_scale = 8.0F;
     config.identifier.stable_pair.min_midpoint_y_offset_radius_scale = 1.5F;
@@ -28,7 +28,8 @@ hero_lob::PipelineConfig MakeSyntheticConfig() {
     config.identifier.stable_pair.max_center_distance_radius_scale = 8.0F;
     config.identifier.stable_light.max_center_y_offset_radius_scale = 8.0F;
     config.identifier.stable_light.max_center_x_offset_radius_scale = 6.0F;
-    config.identifier.stable_light.center_exclusion_half_width_radius_scale = 0.2F;
+    config.identifier.stable_light.min_center_x_offset_radius_scale = 0.6F;
+    config.identifier.stable_light.center_exclusion_half_width_radius_scale = 0.1F;
     config.identifier.stable_pair_fallback.min_peak_distance_pixels = 4;
     return config;
 }
@@ -132,14 +133,12 @@ bool TestUnknownColorStillValid() {
         detection.anchors.valid;
 }
 
-bool TestMergedStablePairSplit() {
+bool TestStablePairDetectedWithoutLongBars() {
     cv::Mat image = MakeScene();
     DrawGuide(image, cv::Point(130, 55), 10, cv::Scalar(0, 255, 255));
 
-    cv::rectangle(
-        image, cv::Point(115, 86), cv::Point(145, 124), cv::Scalar(255, 0, 0), cv::FILLED, cv::LINE_8);
-    cv::rectangle(
-        image, cv::Point(127, 100), cv::Point(133, 110), cv::Scalar(255, 255, 255), cv::FILLED, cv::LINE_8);
+    DrawBar(image, 118, 86, 124, 3, cv::Scalar(255, 0, 0), cv::Scalar(255, 255, 255), 1);
+    DrawBar(image, 142, 86, 124, 3, cv::Scalar(255, 0, 0), cv::Scalar(255, 255, 255), 1);
 
     hero_lob::Identifier identifier(MakeSyntheticConfig());
     const hero_lob::DetectionResult detection = identifier.Process(MakeFrameData(image));
@@ -168,8 +167,8 @@ int main() {
         std::cerr << "TestUnknownColorStillValid failed\n";
         ++failed;
     }
-    if (!TestMergedStablePairSplit()) {
-        std::cerr << "TestMergedStablePairSplit failed\n";
+    if (!TestStablePairDetectedWithoutLongBars()) {
+        std::cerr << "TestStablePairDetectedWithoutLongBars failed\n";
         ++failed;
     }
 
