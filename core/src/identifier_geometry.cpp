@@ -117,10 +117,6 @@ std::optional<LightPairCandidate> TryBuildLightPair(
     const LightBarCandidate& first,
     const LightBarCandidate& second,
     const PairConstraintConfig& config) {
-    if (first.color != second.color || first.color == TargetColor::kUnknown) {
-        return std::nullopt;
-    }
-
     const LightBarCandidate normalized_first = CanonicalizeLightBar(first);
     const LightBarCandidate normalized_second = CanonicalizeLightBar(second);
 

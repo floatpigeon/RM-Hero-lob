@@ -5,13 +5,15 @@
 namespace hero_lob {
 
 struct IdentifierDebugArtifacts {
-    cv::Mat raw_guide_mask;
-    cv::Mat raw_red_mask;
-    cv::Mat raw_blue_mask;
-    cv::Mat guide_mask;
-    cv::Mat red_mask;
-    cv::Mat blue_mask;
+    cv::Mat raw_brightness_mask;
+    cv::Mat brightness_mask;
+    cv::Mat guide_candidate_mask;
+    cv::Mat light_candidate_mask;
+    cv::Mat stable_pair_roi;
+    cv::Mat edge_red_mask;
+    cv::Mat edge_blue_mask;
     cv::Mat candidate_overlay;
+    cv::Mat stable_pair_overlay;
     cv::Mat result_overlay;
 };
 

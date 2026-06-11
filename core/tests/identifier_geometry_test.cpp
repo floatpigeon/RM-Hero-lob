@@ -87,6 +87,38 @@ bool TestIllegalPairRejected() {
     return !TryBuildLightPair(first, second, config).has_value();
 }
 
+bool TestMixedColorPairAccepted() {
+    PairConstraintConfig config;
+    const LightBarCandidate left_candidate = MakeLight(
+        cv::Point2f(6.0F, 20.0F),
+        cv::Point2f(6.0F, 15.0F),
+        cv::Point2f(6.0F, 25.0F),
+        TargetColor::kRed);
+    const LightBarCandidate right_candidate = MakeLight(
+        cv::Point2f(16.0F, 20.0F),
+        cv::Point2f(16.0F, 15.0F),
+        cv::Point2f(16.0F, 25.0F),
+        TargetColor::kBlue);
+
+    return TryBuildLightPair(left_candidate, right_candidate, config).has_value();
+}
+
+bool TestUnknownColorPairAccepted() {
+    PairConstraintConfig config;
+    const LightBarCandidate left_candidate = MakeLight(
+        cv::Point2f(6.0F, 20.0F),
+        cv::Point2f(6.0F, 15.0F),
+        cv::Point2f(6.0F, 25.0F),
+        TargetColor::kUnknown);
+    const LightBarCandidate right_candidate = MakeLight(
+        cv::Point2f(16.0F, 20.0F),
+        cv::Point2f(16.0F, 15.0F),
+        cv::Point2f(16.0F, 25.0F),
+        TargetColor::kUnknown);
+
+    return TryBuildLightPair(left_candidate, right_candidate, config).has_value();
+}
+
 bool TestPenaltyOrderingStable() {
     PairConstraintConfig pair_config;
     TripletConstraintConfig triplet_config;
@@ -142,6 +174,14 @@ int main() {
     }
     if (!TestIllegalPairRejected()) {
         std::cerr << "TestIllegalPairRejected failed\n";
+        ++failed;
+    }
+    if (!TestMixedColorPairAccepted()) {
+        std::cerr << "TestMixedColorPairAccepted failed\n";
+        ++failed;
+    }
+    if (!TestUnknownColorPairAccepted()) {
+        std::cerr << "TestUnknownColorPairAccepted failed\n";
         ++failed;
     }
     if (!TestPenaltyOrderingStable()) {

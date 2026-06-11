@@ -24,13 +24,15 @@ constexpr int kDisplayHeight = 1080;
 
 enum class ViewMode {
     kOriginal,
-    kRawGuideMask,
-    kRawRedMask,
-    kRawBlueMask,
-    kGuideMask,
-    kRedMask,
-    kBlueMask,
+    kRawBrightnessMask,
+    kBrightnessMask,
+    kGuideCandidateMask,
+    kLightCandidateMask,
+    kStablePairRoi,
+    kEdgeRedMask,
+    kEdgeBlueMask,
     kCandidateOverlay,
+    kStablePairOverlay,
     kResultOverlay,
 };
 
@@ -145,13 +147,18 @@ cv::Mat ResizeForDisplay(const cv::Mat& image) {
 cv::Mat ViewImage(const FrameArtifacts& artifacts, ViewMode mode) {
     switch (mode) {
         case ViewMode::kOriginal: return artifacts.original;
-        case ViewMode::kRawGuideMask: return ToBgrMask(artifacts.analysis.debug.raw_guide_mask);
-        case ViewMode::kRawRedMask: return ToBgrMask(artifacts.analysis.debug.raw_red_mask);
-        case ViewMode::kRawBlueMask: return ToBgrMask(artifacts.analysis.debug.raw_blue_mask);
-        case ViewMode::kGuideMask: return ToBgrMask(artifacts.analysis.debug.guide_mask);
-        case ViewMode::kRedMask: return ToBgrMask(artifacts.analysis.debug.red_mask);
-        case ViewMode::kBlueMask: return ToBgrMask(artifacts.analysis.debug.blue_mask);
+        case ViewMode::kRawBrightnessMask:
+            return ToBgrMask(artifacts.analysis.debug.raw_brightness_mask);
+        case ViewMode::kBrightnessMask: return ToBgrMask(artifacts.analysis.debug.brightness_mask);
+        case ViewMode::kGuideCandidateMask:
+            return ToBgrMask(artifacts.analysis.debug.guide_candidate_mask);
+        case ViewMode::kLightCandidateMask:
+            return ToBgrMask(artifacts.analysis.debug.light_candidate_mask);
+        case ViewMode::kStablePairRoi: return ToBgrMask(artifacts.analysis.debug.stable_pair_roi);
+        case ViewMode::kEdgeRedMask: return ToBgrMask(artifacts.analysis.debug.edge_red_mask);
+        case ViewMode::kEdgeBlueMask: return ToBgrMask(artifacts.analysis.debug.edge_blue_mask);
         case ViewMode::kCandidateOverlay: return artifacts.analysis.debug.candidate_overlay;
+        case ViewMode::kStablePairOverlay: return artifacts.analysis.debug.stable_pair_overlay;
         case ViewMode::kResultOverlay: return artifacts.analysis.debug.result_overlay;
     }
     return artifacts.original;
@@ -160,13 +167,15 @@ cv::Mat ViewImage(const FrameArtifacts& artifacts, ViewMode mode) {
 std::string ViewName(ViewMode mode) {
     switch (mode) {
         case ViewMode::kOriginal: return "original";
-        case ViewMode::kRawGuideMask: return "raw_guide_mask";
-        case ViewMode::kRawRedMask: return "raw_red_mask";
-        case ViewMode::kRawBlueMask: return "raw_blue_mask";
-        case ViewMode::kGuideMask: return "guide_mask";
-        case ViewMode::kRedMask: return "red_mask";
-        case ViewMode::kBlueMask: return "blue_mask";
+        case ViewMode::kRawBrightnessMask: return "raw_brightness_mask";
+        case ViewMode::kBrightnessMask: return "brightness_mask";
+        case ViewMode::kGuideCandidateMask: return "guide_candidate_mask";
+        case ViewMode::kLightCandidateMask: return "light_candidate_mask";
+        case ViewMode::kStablePairRoi: return "stable_pair_roi";
+        case ViewMode::kEdgeRedMask: return "edge_red_mask";
+        case ViewMode::kEdgeBlueMask: return "edge_blue_mask";
         case ViewMode::kCandidateOverlay: return "candidate_overlay";
+        case ViewMode::kStablePairOverlay: return "stable_pair_overlay";
         case ViewMode::kResultOverlay: return "result_overlay";
     }
     return "unknown";
@@ -202,13 +211,15 @@ bool WriteSummary(
 bool WriteImageArtifacts(const FrameArtifacts& artifacts, const fs::path& output_dir) {
     const std::vector<std::pair<std::string, cv::Mat>> images = {
         {"original.png", artifacts.original},
-        {"raw_guide_mask.png", artifacts.analysis.debug.raw_guide_mask},
-        {"raw_red_mask.png", artifacts.analysis.debug.raw_red_mask},
-        {"raw_blue_mask.png", artifacts.analysis.debug.raw_blue_mask},
-        {"guide_mask.png", artifacts.analysis.debug.guide_mask},
-        {"red_mask.png", artifacts.analysis.debug.red_mask},
-        {"blue_mask.png", artifacts.analysis.debug.blue_mask},
+        {"raw_brightness_mask.png", artifacts.analysis.debug.raw_brightness_mask},
+        {"brightness_mask.png", artifacts.analysis.debug.brightness_mask},
+        {"guide_candidate_mask.png", artifacts.analysis.debug.guide_candidate_mask},
+        {"light_candidate_mask.png", artifacts.analysis.debug.light_candidate_mask},
+        {"stable_pair_roi.png", artifacts.analysis.debug.stable_pair_roi},
+        {"edge_red_mask.png", artifacts.analysis.debug.edge_red_mask},
+        {"edge_blue_mask.png", artifacts.analysis.debug.edge_blue_mask},
         {"candidate_overlay.png", artifacts.analysis.debug.candidate_overlay},
+        {"stable_pair_overlay.png", artifacts.analysis.debug.stable_pair_overlay},
         {"result_overlay.png", artifacts.analysis.debug.result_overlay},
     };
 
@@ -228,13 +239,15 @@ bool WriteVideoArtifacts(
     const std::vector<FrameArtifacts>& frames, const fs::path& output_dir) {
     const std::vector<std::pair<std::string, ViewMode>> artifact_dirs = {
         {"original", ViewMode::kOriginal},
-        {"raw_guide_mask", ViewMode::kRawGuideMask},
-        {"raw_red_mask", ViewMode::kRawRedMask},
-        {"raw_blue_mask", ViewMode::kRawBlueMask},
-        {"guide_mask", ViewMode::kGuideMask},
-        {"red_mask", ViewMode::kRedMask},
-        {"blue_mask", ViewMode::kBlueMask},
+        {"raw_brightness_mask", ViewMode::kRawBrightnessMask},
+        {"brightness_mask", ViewMode::kBrightnessMask},
+        {"guide_candidate_mask", ViewMode::kGuideCandidateMask},
+        {"light_candidate_mask", ViewMode::kLightCandidateMask},
+        {"stable_pair_roi", ViewMode::kStablePairRoi},
+        {"edge_red_mask", ViewMode::kEdgeRedMask},
+        {"edge_blue_mask", ViewMode::kEdgeBlueMask},
         {"candidate_overlay", ViewMode::kCandidateOverlay},
+        {"stable_pair_overlay", ViewMode::kStablePairOverlay},
         {"result_overlay", ViewMode::kResultOverlay},
     };
 
@@ -313,13 +326,15 @@ void PutHud(
 void RunImageGui(const FrameArtifacts& artifacts) {
     std::vector<ViewMode> modes = {
         ViewMode::kOriginal,
-        ViewMode::kRawGuideMask,
-        ViewMode::kRawRedMask,
-        ViewMode::kRawBlueMask,
-        ViewMode::kGuideMask,
-        ViewMode::kRedMask,
-        ViewMode::kBlueMask,
+        ViewMode::kRawBrightnessMask,
+        ViewMode::kBrightnessMask,
+        ViewMode::kGuideCandidateMask,
+        ViewMode::kLightCandidateMask,
+        ViewMode::kStablePairRoi,
+        ViewMode::kEdgeRedMask,
+        ViewMode::kEdgeBlueMask,
         ViewMode::kCandidateOverlay,
+        ViewMode::kStablePairOverlay,
         ViewMode::kResultOverlay,
     };
     std::size_t mode_index = 0;
@@ -354,14 +369,16 @@ void RunVideoGui(const std::vector<FrameArtifacts>& frames) {
 
     std::vector<ViewMode> modes = {
         ViewMode::kResultOverlay,
+        ViewMode::kStablePairOverlay,
         ViewMode::kCandidateOverlay,
         ViewMode::kOriginal,
-        ViewMode::kRawGuideMask,
-        ViewMode::kRawRedMask,
-        ViewMode::kRawBlueMask,
-        ViewMode::kGuideMask,
-        ViewMode::kRedMask,
-        ViewMode::kBlueMask,
+        ViewMode::kRawBrightnessMask,
+        ViewMode::kBrightnessMask,
+        ViewMode::kGuideCandidateMask,
+        ViewMode::kLightCandidateMask,
+        ViewMode::kStablePairRoi,
+        ViewMode::kEdgeRedMask,
+        ViewMode::kEdgeBlueMask,
     };
     std::size_t mode_index = 0;
     std::size_t frame_index = 0;

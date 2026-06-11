@@ -12,7 +12,7 @@
 - `tracker_processor`
 - `image_synthesis`
 
-其中 `capture` 已经实现了视频逐帧读取、HSV 转换和 0.5 秒滑动窗口缓存；其余模块目前为可贯通的占位实现，用于跑通整条管线。
+其中 `capture` 已经实现了视频逐帧读取、HSV 转换和 0.5 秒滑动窗口缓存；`identifier` 已经实现了首版亮度优先识别；其余模块目前为可贯通的占位实现，用于跑通整条管线。
 
 ## 算法流程
 
@@ -22,7 +22,7 @@
    持续获取图像，转换到 HSV 色域，并缓存最近 0.5 秒的图像序列。
 
 2. `identifier`
-   在当前帧中识别目标，包括绿色引导灯、左右灯条、方向信息和颜色类别。
+   在当前帧中先用亮度筛出所有发光结构，稳健检测引导灯，再只在引导灯下方局部 ROI 中寻找一对稳定竖向短灯条作为主锚，并用边缘未过曝像素后判定红蓝或 `unknown`。
 
 3. `tracker`
    基于上一时刻状态持续跟踪目标；当目标丢失超过 200ms 时，进入重识别。
@@ -62,11 +62,14 @@ cmake --build build
 ./build/hero_lob
 ```
 
-同时会生成两个测试工具：
+同时会生成以下工具和测试程序：
 
 ```bash
 ./build/hero_lob_color_picker
 ./build/hero_lob_brighten
+./build/hero_lob_identifier_debug
+./build/identifier_geometry_test
+./build/identifier_synthetic_test
 ```
 
 ## 运行
@@ -117,7 +120,21 @@ cmake --build build
 - `--auto` 模式对 `Lab` 的 `L` 通道应用 `CLAHE` 自动增强。
 - 输出图像保持原始分辨率，格式由输出文件扩展名决定。
 
+### 识别器调试工具
+
+命令：
+
+```bash
+./build/hero_lob_identifier_debug image /path/to/input.png /tmp/identifier_debug
+./build/hero_lob_identifier_debug video /path/to/input.mp4 /tmp/identifier_debug --max-frames 120
+```
+
+行为：
+- 导出 `raw_brightness_mask`、`brightness_mask`、`guide_candidate_mask`、`light_candidate_mask`、`stable_pair_roi`、`edge_red_mask`、`edge_blue_mask`、`candidate_overlay`、`stable_pair_overlay`、`result_overlay`。
+- 摘要文件会输出是否检测成功、最终颜色类别，以及 guide 和稳定竖向短灯条对的 anchors。
+- `--gui` 模式可在原图、各类 mask 和 overlay 之间切换查看。
+
 ## 当前状态
 
-- 已完成：C++ 工程框架、模块划分、主管线、图像获取模块、两项测试工具入口。
-- 未完成：真实的目标识别、跟踪、参考帧选择、配准、背景剔除、轨迹增强等算法细节。
+- 已完成：C++ 工程框架、模块划分、主管线、图像获取模块、亮度优先识别器、三项工具入口、识别器几何与合成图测试。
+- 未完成：跟踪、参考帧选择、配准、背景剔除、轨迹增强等后续算法细节仍为占位实现。

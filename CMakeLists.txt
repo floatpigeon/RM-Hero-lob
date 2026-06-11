@@ -90,3 +90,14 @@ target_link_libraries(identifier_geometry_test
 )
 
 add_test(NAME identifier_geometry_test COMMAND identifier_geometry_test)
+
+add_executable(identifier_synthetic_test
+    core/tests/identifier_synthetic_test.cpp
+)
+
+target_link_libraries(identifier_synthetic_test
+    PRIVATE
+        hero_lob_core
+)
+
+add_test(NAME identifier_synthetic_test COMMAND identifier_synthetic_test)
