@@ -69,6 +69,7 @@ cmake --build build
 ./build/hero_lob_brighten
 ./build/hero_lob_identifier_debug
 ./build/hero_lob_trajectory_debug
+./build/hero_lob_compress
 ./build/identifier_geometry_test
 ./build/identifier_synthetic_test
 ```
@@ -148,6 +149,26 @@ cmake --build build
 - 导出 `first_frame.png`、`candidate_mask_last.png`、`trajectory_exposure.png`、`trajectory_heatmap.png`、`trajectory_overlay.png`。
 - `summary.txt` 输出最终帧的候选前景像素数、轨迹像素数和滑动窗口累计帧数；`summary.csv` 输出逐帧统计。
 - `--gui` 模式可在原图、候选前景 mask、轨迹曝光图、热力图和叠加图之间切换查看。
+
+### 图像压缩工具
+
+命令：
+
+```bash
+./build/hero_lob_compress /path/to/input.png /tmp/output.jpg --size 55x55 --gray
+./build/hero_lob_compress /path/to/input.png /tmp/output.jpg --max-bytes 300 --gray
+```
+
+行为：
+- `--size WxH`：缩放到指定分辨率（如 `--size 55x55`）。
+- `--width W` / `--height H`：按宽度或高度缩放，保持纵横比。
+- `--gray`：转换为灰度图。
+- `--quality Q`：JPEG 质量 1-100（默认 95）。
+- `--max-bytes N`：限制输出文件大小（如 `--max-bytes 300` 对应 2.4kbit 数据包）。
+
+适用场景：
+- 2.4kbit（300 字节）数据包传输：`--max-bytes 300 --gray`
+- 50Hz 传输率下每帧 300 字节：灰度图约 55×55 像素（10:1 压缩）
 
 ## 当前状态
 
