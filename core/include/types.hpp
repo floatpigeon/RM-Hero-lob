@@ -154,7 +154,7 @@ struct IdentifierConfig {
 
 struct MotionForegroundConfig {
     int warmup_frames = 5;
-    int min_brightness_value = 180;
+    int min_brightness_value = 128;
     int min_diff_value = 24;
     float background_alpha = 0.05F;
     int open_kernel_size = 3;
@@ -164,13 +164,13 @@ struct MotionForegroundConfig {
 
 struct TrajectoryWindowConfig {
     double window_seconds = 3.0;
-    int temporal_vote_frames = 3;
-    int temporal_vote_threshold = 2;
-    int min_component_area_pixels = 9;
-    float max_component_area_ratio = 0.05F;
-    float vertical_motion_half_angle_degrees = 30.0F;
+    int min_component_area_pixels = 5;
+    float vertical_motion_half_angle_degrees = 40.0F;
     float min_motion_pixels = 0.5F;
-    float component_match_max_distance_pixels = 40.0F;
+    float component_match_max_distance_pixels = 120.0F;
+    float velocity_smoothing_alpha = 0.6F;
+    float normalization_percentile = 0.99F;
+    int min_tracking_frames = 5;
 };
 
 struct PipelineConfig {
@@ -237,7 +237,6 @@ struct ForegroundMaskResult {
     std::int64_t frame_index = -1;
     double timestamp_seconds = 0.0;
     cv::Rect roi = {};
-    cv::Mat static_exclusion_mask;
     cv::Mat candidate_mask;
     cv::Mat candidate_bgr;
 };

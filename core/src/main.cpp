@@ -1,5 +1,6 @@
 #include "pipeline.hpp"
 
+#include <chrono>
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -9,6 +10,10 @@ int main(int argc, char* argv[]) {
     }
 
     hero_lob::Pipeline pipeline;
-    pipeline.Run(argv[1], argv[2]);
-    return 0;
+    auto start = std::chrono::steady_clock::now();
+    bool ok = pipeline.Run(argv[1], argv[2]);
+    auto end = std::chrono::steady_clock::now();
+    double elapsed = std::chrono::duration<double>(end - start).count();
+    std::cerr << "[Main] Elapsed: " << elapsed << "s\n";
+    return ok ? 0 : 1;
 }

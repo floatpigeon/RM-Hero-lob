@@ -69,15 +69,6 @@ target_link_libraries(hero_lob_brighten
         ${OpenCV_LIBS}
 )
 
-add_executable(hero_lob_identifier_debug
-    core/tools/identifier_debug_main.cpp
-)
-
-target_link_libraries(hero_lob_identifier_debug
-    PRIVATE
-        hero_lob_core
-)
-
 add_executable(hero_lob_trajectory_debug
     core/tools/trajectory_debug_main.cpp
 )
@@ -85,4 +76,46 @@ add_executable(hero_lob_trajectory_debug
 target_link_libraries(hero_lob_trajectory_debug
     PRIVATE
         hero_lob_core
+)
+
+add_executable(hero_lob_frame_extractor
+    core/tools/frame_extractor_main.cpp
+)
+
+target_include_directories(hero_lob_frame_extractor
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_frame_extractor
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
+add_executable(hero_lob_brightness_dist
+    core/tools/brightness_dist_main.cpp
+)
+
+target_include_directories(hero_lob_brightness_dist
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_brightness_dist
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
+add_executable(hero_lob_brightness_filter
+    core/tools/brightness_filter_main.cpp
+)
+
+target_include_directories(hero_lob_brightness_filter
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_brightness_filter
+    PRIVATE
+        ${OpenCV_LIBS}
 )

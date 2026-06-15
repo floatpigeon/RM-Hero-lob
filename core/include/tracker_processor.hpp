@@ -1,6 +1,5 @@
 #pragma once
 
-#include <deque>
 #include <vector>
 
 #include "types.hpp"
@@ -12,6 +11,8 @@ public:
     struct ComponentInfo {
         cv::Mat mask;
         cv::Point2f centroid = {};
+        cv::Point2f smoothed_velocity = {};
+        bool velocity_initialized = false;
     };
 
     explicit TrackerProcessor(const PipelineConfig& config);
@@ -20,19 +21,11 @@ public:
     void Reset();
 
 private:
-    struct TemporalMaskEntry {
-        cv::Mat mask;
-    };
-
-    struct TrajectoryWindowEntry {
-        double timestamp_seconds = 0.0;
-        cv::Mat color_frame;
-    };
-
     PipelineConfig config_;
-    std::deque<TemporalMaskEntry> temporal_masks_;
-    std::deque<TrajectoryWindowEntry> trajectory_window_;
     std::vector<ComponentInfo> previous_components_;
+    cv::Mat trajectory_layer_;
+    int frame_count_ = 0;
+    double previous_timestamp_ = 0.0;
 };
 
 }  // namespace hero_lob
