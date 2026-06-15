@@ -9,6 +9,11 @@ namespace hero_lob {
 
 class TrackerProcessor {
 public:
+    struct ComponentInfo {
+        cv::Mat mask;
+        cv::Point2f centroid = {};
+    };
+
     explicit TrackerProcessor(const PipelineConfig& config);
 
     TrajectoryResult Process(const ForegroundMaskResult& foreground_mask);
@@ -21,13 +26,13 @@ private:
 
     struct TrajectoryWindowEntry {
         double timestamp_seconds = 0.0;
-        std::vector<cv::Point> points;
+        cv::Mat color_frame;
     };
 
     PipelineConfig config_;
-    cv::Mat hit_count_map_;
     std::deque<TemporalMaskEntry> temporal_masks_;
     std::deque<TrajectoryWindowEntry> trajectory_window_;
+    std::vector<ComponentInfo> previous_components_;
 };
 
 }  // namespace hero_lob

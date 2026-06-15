@@ -168,6 +168,9 @@ struct TrajectoryWindowConfig {
     int temporal_vote_threshold = 2;
     int min_component_area_pixels = 9;
     float max_component_area_ratio = 0.05F;
+    float vertical_motion_half_angle_degrees = 30.0F;
+    float min_motion_pixels = 0.5F;
+    float component_match_max_distance_pixels = 40.0F;
 };
 
 struct PipelineConfig {
@@ -236,6 +239,7 @@ struct ForegroundMaskResult {
     cv::Rect roi = {};
     cv::Mat static_exclusion_mask;
     cv::Mat candidate_mask;
+    cv::Mat candidate_bgr;
 };
 
 struct TrajectoryResult {
