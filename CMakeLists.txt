@@ -19,6 +19,7 @@ add_library(hero_lob_core
     core/src/image_registrator.cpp
     core/src/background_remover.cpp
     core/src/tracker_processor.cpp
+    core/src/tracker_processor_fast.cpp
     core/src/image_synthesis.cpp
 )
 
@@ -144,6 +145,20 @@ target_include_directories(hero_lob_compress
 )
 
 target_link_libraries(hero_lob_compress
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
+add_executable(hero_lob_median_background
+    core/tools/median_background_main.cpp
+)
+
+target_include_directories(hero_lob_median_background
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_median_background
     PRIVATE
         ${OpenCV_LIBS}
 )

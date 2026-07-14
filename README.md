@@ -170,6 +170,21 @@ cmake --build build
 - 2.4kbit（300 字节）数据包传输：`--max-bytes 300 --gray`
 - 50Hz 传输率下每帧 300 字节：灰度图约 55×55 像素（10:1 压缩）
 
+### 中值背景提取工具
+
+命令：
+
+```bash
+./build/hero_lob_median_background /path/to/input.mp4 /tmp/background.png
+./build/hero_lob_median_background /path/to/input.mp4 /tmp/background.png --max-frames 50 --step 3
+```
+
+行为：
+- 使用中值法从视频中提取静态背景。
+- `--max-frames N`：最多使用 N 帧计算中值（默认全部）。
+- `--step N`：每隔 N 帧取一帧（默认 1）。
+- 输出背景图像，格式由输出文件扩展名决定。
+
 ## 当前状态
 
 - 已完成：C++ 工程框架、模块划分、主管线、图像获取模块、亮度优先识别器、三项工具入口、识别器几何与合成图测试。
