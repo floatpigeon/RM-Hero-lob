@@ -10,6 +10,7 @@
 #include "reference_frame_selector.hpp"
 #include "tracker.hpp"
 #include "tracker_processor.hpp"
+#include "tracker_processor_fast.hpp"
 #include "types.hpp"
 
 namespace hero_lob {
@@ -29,6 +30,7 @@ private:
     ImageRegistrator image_registrator_;
     BackgroundRemover background_remover_;
     TrackerProcessor tracker_processor_;
+    TrackerProcessorFast tracker_processor_fast_;
     ImageSynthesis image_synthesis_;
 };
 

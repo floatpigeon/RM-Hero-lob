@@ -2,8 +2,7 @@
 
 namespace hero_lob {
 
-ReferenceFrameSelector::ReferenceFrameSelector(const PipelineConfig& config)
-    : config_(config) {}
+ReferenceFrameSelector::ReferenceFrameSelector(const PipelineConfig& config) : config_(config) {}
 
 ReferenceFrameResult ReferenceFrameSelector::Process(
     const FrameData& frame, const TrackingResult& tracking) {
@@ -18,9 +17,7 @@ ReferenceFrameResult ReferenceFrameSelector::Process(
 
 void ReferenceFrameSelector::StartTrigger(double trigger_start_time_seconds) {}
 
-void ReferenceFrameSelector::Reset() {
-    current_reference_ = {};
-}
+void ReferenceFrameSelector::Reset() { current_reference_ = {}; }
 
 void ReferenceFrameSelector::TrimWindow(double current_timestamp_seconds) {}
 
