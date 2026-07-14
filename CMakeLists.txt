@@ -120,6 +120,20 @@ target_link_libraries(hero_lob_brightness_filter
         ${OpenCV_LIBS}
 )
 
+add_executable(hero_lob_video_trimmer
+    core/tools/video_trimmer_main.cpp
+)
+
+target_include_directories(hero_lob_video_trimmer
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_video_trimmer
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
 add_executable(hero_lob_compress
     core/tools/compress_main.cpp
 )
