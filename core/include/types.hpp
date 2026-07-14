@@ -171,12 +171,15 @@ struct TrajectoryWindowConfig {
     float velocity_smoothing_alpha = 0.6F;
     float normalization_percentile = 0.99F;
     int min_tracking_frames = 5;
+    float trajectory_decay = 0.95F;
 };
 
 struct PipelineConfig {
     double stable_window_seconds = 0.5;
     double lost_timeout_seconds = 0.2;
     double trigger_window_seconds = 3.0;
+    int output_width = 288;
+    int output_height = 216;
     IdentifierConfig identifier = {};
     MotionForegroundConfig motion_foreground = {};
     TrajectoryWindowConfig trajectory_window = {};
@@ -244,6 +247,7 @@ struct ForegroundMaskResult {
 struct TrajectoryResult {
     bool valid = false;
     cv::Mat trajectory_layer;
+    cv::Mat exposure_count;
     int accumulated_frames = 0;
 };
 

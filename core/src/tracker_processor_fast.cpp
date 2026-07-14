@@ -46,6 +46,7 @@ TrajectoryResult TrackerProcessorFast::Process(const ForegroundMaskResult& foreg
 
     if (trajectory_layer_.empty()) {
         trajectory_layer_ = cv::Mat::zeros(foreground_mask.candidate_mask.size(), CV_32FC3);
+        exposure_count_ = cv::Mat::zeros(foreground_mask.candidate_mask.size(), CV_32FC1);
     }
 
     for (auto& comp : current_components) {
@@ -96,6 +97,7 @@ TrajectoryResult TrackerProcessorFast::Process(const ForegroundMaskResult& foreg
 
             cv::Mat bgr_roi = foreground_mask.candidate_bgr(comp.bbox);
             cv::Mat traj_roi = trajectory_layer_(comp.bbox);
+            cv::Mat count_roi = exposure_count_(comp.bbox);
 
             cv::Mat bgr_f;
             bgr_roi.convertTo(bgr_f, CV_32F);
@@ -109,6 +111,8 @@ TrajectoryResult TrackerProcessorFast::Process(const ForegroundMaskResult& foreg
             cv::Mat masked_bgr;
             cv::multiply(bgr_f, mask_3ch, masked_bgr);
             cv::add(traj_roi, masked_bgr, traj_roi);
+
+            cv::add(count_roi, mask_f, count_roi);
         }
     }
 
@@ -117,6 +121,7 @@ TrajectoryResult TrackerProcessorFast::Process(const ForegroundMaskResult& foreg
     frame_count_++;
     result.valid = true;
     result.trajectory_layer = trajectory_layer_;
+    result.exposure_count = exposure_count_;
     result.accumulated_frames = frame_count_;
     return result;
 }
@@ -124,6 +129,7 @@ TrajectoryResult TrackerProcessorFast::Process(const ForegroundMaskResult& foreg
 void TrackerProcessorFast::Reset() {
     previous_components_.clear();
     trajectory_layer_ = cv::Mat();
+    exposure_count_ = cv::Mat();
     mask_buffer_ = cv::Mat();
     frame_count_ = 0;
     previous_timestamp_ = 0.0;

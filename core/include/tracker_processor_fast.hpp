@@ -24,6 +24,7 @@ private:
     PipelineConfig config_;
     std::vector<ComponentInfo> previous_components_;
     cv::Mat trajectory_layer_;
+    cv::Mat exposure_count_;
     cv::Mat mask_buffer_;
     int frame_count_ = 0;
     double previous_timestamp_ = 0.0;

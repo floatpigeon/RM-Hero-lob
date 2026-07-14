@@ -21,6 +21,20 @@ SynthesisResult ImageSynthesis::Process(
     }
     const auto& tw = config_.trajectory_window;
     cv::Mat layer = trajectory.trajectory_layer;
+
+    if (!trajectory.exposure_count.empty()) {
+        cv::Mat count_3ch;
+        cv::merge(
+            std::vector<cv::Mat>{
+                trajectory.exposure_count, trajectory.exposure_count, trajectory.exposure_count},
+            count_3ch);
+        cv::Mat count_f;
+        count_3ch.convertTo(count_f, CV_32F);
+        cv::Mat safe_count;
+        cv::max(count_f, 1.0F, safe_count);
+        cv::divide(layer, safe_count, layer);
+    }
+
     std::vector<float> flat;
     layer.reshape(1, 1).copyTo(flat);
     std::sort(flat.begin(), flat.end());
@@ -36,13 +50,23 @@ SynthesisResult ImageSynthesis::Process(
         result.output_image = reference.reference_frame.bgr.clone();
         return result;
     }
+
     cv::Mat normalized;
-    layer.convertTo(normalized, CV_32F, 255.0 / max_val);
-    cv::Mat clamped;
-    normalized.convertTo(clamped, CV_8UC3);
+    layer.convertTo(normalized, CV_8UC3, 255.0 / max_val * 0.6);
+
+    cv::Mat lab;
+    cv::cvtColor(normalized, lab, cv::COLOR_BGR2Lab);
+    std::vector<cv::Mat> lab_channels;
+    cv::split(lab, lab_channels);
+    cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(2.0, cv::Size(8, 8));
+    clahe->apply(lab_channels[0], lab_channels[0]);
+    cv::merge(lab_channels, lab);
+    cv::Mat enhanced;
+    cv::cvtColor(lab, enhanced, cv::COLOR_Lab2BGR);
+
     cv::Mat ref = reference.reference_frame.bgr;
     cv::Mat output;
-    cv::add(ref, clamped, output);
+    cv::add(ref, enhanced, output);
     result.valid = true;
     result.output_image = output;
     return result;

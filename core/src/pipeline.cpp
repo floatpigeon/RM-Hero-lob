@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 
 namespace hero_lob {
 
@@ -84,7 +85,16 @@ bool Pipeline::Run(const std::string& input_video, const std::string& output_ima
         std::cerr << "[Pipeline] Synthesis failed\n";
         return false;
     }
-    bool ok = cv::imwrite(output_image, synthesis.output_image);
+
+    cv::Mat final_output;
+    if (config_.output_width > 0 && config_.output_height > 0) {
+        cv::resize(synthesis.output_image, final_output,
+                   cv::Size(config_.output_width, config_.output_height), 0, 0, cv::INTER_AREA);
+    } else {
+        final_output = synthesis.output_image;
+    }
+
+    bool ok = cv::imwrite(output_image, final_output);
     if (!ok) {
         std::cerr << "[Pipeline] Failed to write output: " << output_image << '\n';
     }
