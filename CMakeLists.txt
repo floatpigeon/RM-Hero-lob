@@ -7,16 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc videoio)
+find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc videoio features2d calib3d)
 
 add_library(hero_lob_core
     core/src/pipeline.cpp
     core/src/capture.cpp
-    core/src/identifier.cpp
-    core/src/identifier_geometry.cpp
-    core/src/tracker.cpp
     core/src/reference_frame_selector.cpp
     core/src/image_registrator.cpp
+    core/src/image_registrator_orb.cpp
     core/src/background_remover.cpp
     core/src/tracker_processor.cpp
     core/src/tracker_processor_fast.cpp
@@ -107,6 +105,20 @@ target_link_libraries(hero_lob_brightness_dist
         ${OpenCV_LIBS}
 )
 
+add_executable(hero_lob_line_marker
+    core/tools/line_marker_main.cpp
+)
+
+target_include_directories(hero_lob_line_marker
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+)
+
+target_link_libraries(hero_lob_line_marker
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
 add_executable(hero_lob_brightness_filter
     core/tools/brightness_filter_main.cpp
 )
@@ -131,6 +143,15 @@ target_include_directories(hero_lob_video_trimmer
 )
 
 target_link_libraries(hero_lob_video_trimmer
+    PRIVATE
+        ${OpenCV_LIBS}
+)
+
+add_executable(hero_lob_tile_split
+    core/tools/tile_split_main.cpp
+)
+
+target_link_libraries(hero_lob_tile_split
     PRIVATE
         ${OpenCV_LIBS}
 )

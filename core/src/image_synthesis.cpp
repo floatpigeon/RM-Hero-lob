@@ -65,6 +65,9 @@ SynthesisResult ImageSynthesis::Process(
     cv::cvtColor(lab, enhanced, cv::COLOR_Lab2BGR);
 
     cv::Mat ref = reference.reference_frame.bgr;
+    if (ref.size() != enhanced.size()) {
+        cv::resize(ref, ref, enhanced.size(), 0, 0, cv::INTER_AREA);
+    }
     cv::Mat output;
     cv::add(ref, enhanced, output);
     result.valid = true;

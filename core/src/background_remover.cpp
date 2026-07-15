@@ -16,6 +16,9 @@ ForegroundMaskResult BackgroundRemover::Process(
     cv::Mat ref_gray, cur_gray;
     cv::cvtColor(reference.reference_frame.bgr, ref_gray, cv::COLOR_BGR2GRAY);
     cv::cvtColor(registration.registered_bgr, cur_gray, cv::COLOR_BGR2GRAY);
+    if (ref_gray.size() != cur_gray.size()) {
+        cv::resize(ref_gray, ref_gray, cur_gray.size(), 0, 0, cv::INTER_AREA);
+    }
     cv::Mat diff;
     cv::absdiff(ref_gray, cur_gray, diff);
     cv::Mat bright_mask;

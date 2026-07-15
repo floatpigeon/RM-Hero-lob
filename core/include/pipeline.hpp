@@ -4,11 +4,10 @@
 
 #include "background_remover.hpp"
 #include "capture.hpp"
-#include "identifier.hpp"
 #include "image_registrator.hpp"
+#include "image_registrator_orb.hpp"
 #include "image_synthesis.hpp"
 #include "reference_frame_selector.hpp"
-#include "tracker.hpp"
 #include "tracker_processor.hpp"
 #include "tracker_processor_fast.hpp"
 #include "types.hpp"
@@ -24,12 +23,9 @@ public:
 private:
     PipelineConfig config_;
     Capture capture_;
-    Identifier identifier_;
-    Tracker tracker_;
     ReferenceFrameSelector reference_frame_selector_;
-    ImageRegistrator image_registrator_;
+    ImageRegistratorOrb image_registrator_;
     BackgroundRemover background_remover_;
-    TrackerProcessor tracker_processor_;
     TrackerProcessorFast tracker_processor_fast_;
     ImageSynthesis image_synthesis_;
 };

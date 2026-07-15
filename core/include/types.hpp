@@ -26,130 +26,19 @@ enum class ReferenceMode {
     kFrozen,
 };
 
-struct HsvRangeConfig {
-    int hue_min = 0;
-    int hue_max = 0;
+struct ImageRegistratorConfig {
+    double max_shift_pixels = 0.0;
+    float downscale_factor = 0.5F;
 };
 
-struct BrightnessThresholdConfig {
-    int min_value = 220;
-};
-
-struct EdgeColorThresholdConfig {
-    HsvRangeConfig red_low = {0, 12};
-    HsvRangeConfig red_high = {166, 179};
-    HsvRangeConfig blue = {95, 130};
-    int min_saturation = 20;
-    int min_value = 60;
-    int edge_band_kernel_size = 5;
-    int min_edge_pixels = 12;
-    float min_color_ratio = 1.25F;
-};
-
-struct MorphologyConfig {
-    int blur_kernel_size = 5;
-    int open_kernel_size = 3;
-    int close_kernel_size = 5;
-};
-
-struct GuideConstraintConfig {
-    float min_area_ratio = 0.00005F;
-    float max_area_ratio = 0.02F;
-    float max_aspect_ratio_deviation = 0.45F;
-    float min_circularity = 0.65F;
-};
-
-struct LightConstraintConfig {
-    float min_length_ratio = 0.02F;
-    float max_length_ratio = 0.30F;
-    float min_width_ratio = 0.003F;
-    float max_width_ratio = 0.08F;
-    float min_aspect_ratio = 2.0F;
-    float max_aspect_ratio = 18.0F;
-    float min_fill_ratio = 0.45F;
-};
-
-struct StablePairRoiConfig {
-    float half_width_radius_scale = 5.0F;
-    float top_offset_radius_scale = 1.4F;
-    float bottom_offset_radius_scale = 5.5F;
-};
-
-struct StableLightConstraintConfig {
-    int local_min_value = 130;
-    float min_length_ratio_to_roi_height = 0.20F;
-    float max_length_ratio_to_roi_height = 0.80F;
-    float min_width_ratio_to_roi_width = 0.01F;
-    float max_width_ratio_to_roi_width = 0.20F;
-    float min_aspect_ratio = 1.40F;
-    float max_aspect_ratio = 12.0F;
-    float min_fill_ratio = 0.15F;
-    float guide_exclusion_radius_scale = 1.20F;
-    float max_abs_angle_from_vertical_degrees = 30.0F;
-    float min_center_y_offset_radius_scale = 1.4F;
-    float max_center_y_offset_radius_scale = 6.5F;
-    float min_center_x_offset_radius_scale = 1.0F;
-    float max_center_x_offset_radius_scale = 4.0F;
-    float center_exclusion_half_width_radius_scale = 0.60F;
-    float min_area_radius_scale_squared = 0.005F;
-    float max_area_radius_scale_squared = 8.0F;
-    int vertical_open_kernel_width = 1;
-    int vertical_open_kernel_height = 1;
-    int vertical_close_kernel_width = 1;
-    int vertical_close_kernel_height = 1;
-};
-
-struct StablePairConstraintConfig {
-    float max_angle_difference_degrees = 18.0F;
-    float max_length_delta_ratio = 1.0F;
-    float max_center_y_delta_ratio = 0.30F;
-    float max_center_y_delta_radius_scale = 0.8F;
-    float max_distance_symmetry_ratio = 0.45F;
-    float max_midpoint_x_offset_ratio = 0.60F;
-    float max_midpoint_x_offset_radius_scale = 0.8F;
-    float min_midpoint_y_offset_radius_scale = 1.4F;
-    float max_midpoint_y_offset_radius_scale = 6.5F;
-    float min_center_distance_ratio = 0.35F;
-    float max_center_distance_ratio = 4.50F;
-    float min_center_distance_radius_scale = 1.0F;
-    float max_center_distance_radius_scale = 6.0F;
-};
-
-struct StablePairFallbackConfig {
-    float split_width_ratio_to_roi_width = 0.16F;
-    int min_peak_distance_pixels = 6;
-    float min_valley_ratio = 0.85F;
-};
-
-struct PairConstraintConfig {
-    float max_angle_difference_degrees = 12.0F;
-    float max_length_delta_ratio = 0.35F;
-    float max_center_y_delta_ratio = 0.45F;
-    float min_center_distance_ratio = 0.40F;
-    float max_center_distance_ratio = 4.50F;
-    float max_overlap_ratio = 0.15F;
-};
-
-struct TripletConstraintConfig {
-    float max_guide_midpoint_x_offset_ratio = 0.90F;
-    float min_guide_midpoint_y_offset_ratio = 0.15F;
-    float max_guide_midpoint_y_offset_ratio = 2.20F;
-    float min_guide_radius_to_light_length_ratio = 0.15F;
-    float max_guide_radius_to_light_length_ratio = 1.10F;
-};
-
-struct IdentifierConfig {
-    BrightnessThresholdConfig brightness = {};
-    EdgeColorThresholdConfig edge_color = {};
-    MorphologyConfig morphology = {};
-    GuideConstraintConfig guide = {};
-    LightConstraintConfig light = {};
-    StablePairRoiConfig stable_pair_roi = {};
-    StableLightConstraintConfig stable_light = {};
-    StablePairConstraintConfig stable_pair = {};
-    StablePairFallbackConfig stable_pair_fallback = {};
-    PairConstraintConfig pair = {};
-    TripletConstraintConfig triplet = {};
+struct ImageRegistratorOrbConfig {
+    int max_features = 200;
+    float match_ratio_threshold = 0.75F;
+    double ransac_reproj_threshold = 3.0;
+    int min_matches = 10;
+    float downscale_factor = 0.5F;
+    int exclude_top_left_width = 100;
+    int exclude_top_left_height = 100;
 };
 
 struct MotionForegroundConfig {
@@ -180,7 +69,8 @@ struct PipelineConfig {
     double trigger_window_seconds = 3.0;
     int output_width = 288;
     int output_height = 216;
-    IdentifierConfig identifier = {};
+    ImageRegistratorConfig image_registrator = {};
+    ImageRegistratorOrbConfig image_registrator_orb = {};
     MotionForegroundConfig motion_foreground = {};
     TrajectoryWindowConfig trajectory_window = {};
 };
