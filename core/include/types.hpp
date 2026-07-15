@@ -42,37 +42,33 @@ struct ImageRegistratorOrbConfig {
 };
 
 struct MotionForegroundConfig {
-    int warmup_frames = 5;
     int min_brightness_value = 128;
     int min_diff_value = 24;
-    float background_alpha = 0.05F;
     int open_kernel_size = 3;
     int close_kernel_size = 5;
-    int static_bright_value_threshold = 220;
 };
 
 struct TrajectoryWindowConfig {
     double window_seconds = 3.0;
     int min_component_area_pixels = 5;
     float vertical_motion_half_angle_degrees = 40.0F;
-    float min_motion_pixels = 0.5F;
     float component_match_max_distance_pixels = 120.0F;
     float velocity_smoothing_alpha = 0.6F;
     float normalization_percentile = 0.99F;
-    int min_tracking_frames = 5;
-    float trajectory_decay = 0.95F;
+};
+
+struct CompressionConfig {
+    int output_width = 288;
+    int output_height = 216;
 };
 
 struct PipelineConfig {
     double stable_window_seconds = 0.5;
-    double lost_timeout_seconds = 0.2;
-    double trigger_window_seconds = 3.0;
-    int output_width = 288;
-    int output_height = 216;
     ImageRegistratorConfig image_registrator = {};
     ImageRegistratorOrbConfig image_registrator_orb = {};
     MotionForegroundConfig motion_foreground = {};
     TrajectoryWindowConfig trajectory_window = {};
+    CompressionConfig compression = {};
 };
 
 struct FrameData {
@@ -142,6 +138,11 @@ struct TrajectoryResult {
 };
 
 struct SynthesisResult {
+    bool valid = false;
+    cv::Mat output_image;
+};
+
+struct CompressionResult {
     bool valid = false;
     cv::Mat output_image;
 };

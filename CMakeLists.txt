@@ -11,14 +11,6 @@ find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc videoio f
 
 add_library(hero_lob_core
     core/src/pipeline.cpp
-    core/src/capture.cpp
-    core/src/reference_frame_selector.cpp
-    core/src/image_registrator.cpp
-    core/src/image_registrator_orb.cpp
-    core/src/background_remover.cpp
-    core/src/tracker_processor.cpp
-    core/src/tracker_processor_fast.cpp
-    core/src/image_synthesis.cpp
 )
 
 target_include_directories(hero_lob_core

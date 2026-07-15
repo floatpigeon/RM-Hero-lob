@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -81,8 +80,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     cv::VideoCapture cap(input_path);
     if (!cap.isOpened()) {
         std::cerr << "[MedianBackground] Failed to open video: " << input_path << '\n';
@@ -95,7 +92,6 @@ int main(int argc, char** argv) {
               << "[MedianBackground] FPS: " << fps << '\n'
               << "[MedianBackground] Total frames: " << total_frames << '\n';
 
-    auto read_start = std::chrono::steady_clock::now();
     std::vector<cv::Mat> frames;
     cv::Mat frame;
     int frame_index = 0;
@@ -111,42 +107,28 @@ int main(int argc, char** argv) {
     }
     cap.release();
 
-    auto read_end = std::chrono::steady_clock::now();
-    double read_elapsed = std::chrono::duration<double>(read_end - read_start).count();
     std::cerr << "[MedianBackground] Collected " << frames.size() << " frames (step=" << step
-              << ") in " << read_elapsed << "s\n";
+              << ")\n";
 
     if (frames.empty()) {
         std::cerr << "[MedianBackground] No frames collected\n";
         return 1;
     }
 
-    auto compute_start = std::chrono::steady_clock::now();
     std::cerr << "[MedianBackground] Computing median background...\n";
     cv::Mat background = ComputeMedianBackground(frames);
-    auto compute_end = std::chrono::steady_clock::now();
-    double compute_elapsed = std::chrono::duration<double>(compute_end - compute_start).count();
-    std::cerr << "[MedianBackground] Median computation completed in " << compute_elapsed << "s\n";
 
     if (background.empty()) {
         std::cerr << "[MedianBackground] Failed to compute median background\n";
         return 1;
     }
 
-    auto write_start = std::chrono::steady_clock::now();
     if (!cv::imwrite(output_path, background)) {
         std::cerr << "[MedianBackground] Failed to write output: " << output_path << '\n';
         return 1;
     }
-    auto write_end = std::chrono::steady_clock::now();
-    double write_elapsed = std::chrono::duration<double>(write_end - write_start).count();
-
-    auto end_time = std::chrono::steady_clock::now();
-    double total_elapsed = std::chrono::duration<double>(end_time - start_time).count();
 
     std::cerr << "[MedianBackground] Output: " << output_path << " (" << background.cols << "x"
-              << background.rows << ")\n"
-              << "[MedianBackground] Write completed in " << write_elapsed << "s\n"
-              << "[MedianBackground] Total elapsed: " << total_elapsed << "s\n";
+              << background.rows << ")\n";
     return 0;
 }

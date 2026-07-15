@@ -4,6 +4,7 @@
 
 #include "background_remover.hpp"
 #include "capture.hpp"
+#include "compression.hpp"
 #include "image_registrator.hpp"
 #include "image_registrator_orb.hpp"
 #include "image_synthesis.hpp"
@@ -28,6 +29,7 @@ private:
     BackgroundRemover background_remover_;
     TrackerProcessorFast tracker_processor_fast_;
     ImageSynthesis image_synthesis_;
+    Compression compression_;
 };
 
 }  // namespace hero_lob
